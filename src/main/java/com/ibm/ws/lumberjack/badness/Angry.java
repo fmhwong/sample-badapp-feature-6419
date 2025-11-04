@@ -33,16 +33,34 @@ public class Angry extends HttpServlet {
 
         Logger logger = Logger.getLogger("com.ibm.ws.lumberjack.badness.Angry");
 
+        // Get the count parameter, default to 1 if not provided
+        String countParam = request.getParameter("count");
+        int count = 1;
+        if (countParam != null && !countParam.isEmpty()) {
+            try {
+                count = Integer.parseInt(countParam);
+                // Ensure count is at least 1
+                if (count < 1) {
+                    count = 1;
+                }
+            } catch (NumberFormatException e) {
+                count = 1;
+            }
+        }
+
         int index = nextMsg++;
         String msg = msgs[index % numMsgs];
 
-        if (msg.charAt(9) == 'W')
-            logger.warning(msg);
-        else
-            logger.severe(msg);
+        // Log the message 'count' times
+        for (int i = 0; i < count; i++) {
+            if (msg.charAt(9) == 'W')
+                logger.warning(msg);
+            else
+                logger.severe(msg);
+        }
 
         PrintWriter pw = response.getWriter();
-        pw.print("Printed message to logs: " + msg);
+        pw.print("Printed message to logs " + count + " time(s): " + msg);
 
     }
 
